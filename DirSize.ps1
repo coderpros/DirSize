@@ -3,7 +3,9 @@ param (
         [ValidateNotNullOrEmpty()] 
         [string] $Path,
         [Parameter(Mandatory=$false)]
-        [switch] $Detailed
+        [switch] $Detailed,
+        [Parameter(Mandatory=$false)]
+        [switch] $Mb
     )
 
 function Get-DirectorySize {
@@ -12,7 +14,9 @@ function Get-DirectorySize {
         [ValidateNotNullOrEmpty()] 
         [string] $Path,
         [Parameter(Mandatory=$false)]
-        [bool] $Detailed
+        [bool] $Detailed,
+        [Parameter(Mandatory=$false)]
+        [bool] $Mb
     )
 
     if($Detailed) {
@@ -25,9 +29,16 @@ function Get-DirectorySize {
                 $file_size = 0
 
                 if($file_count -gt 0) {
-                  $file_size = ((Get-ChildItem $_.FullName -recurse | Measure-Object Length -Sum).sum / 1Gb)
+
+                    if($Mb) {
+                        $file_size = ((Get-ChildItem $_.FullName -recurse | Measure-Object Length -Sum).sum / 1Mb)
                 
-                  "{0:N2} GB | $file_count files `t $_" -f $file_size   
+                        "{0:N2} MB | $file_count files `t $_" -f $file_size
+                    } else {
+                        $file_size = ((Get-ChildItem $_.FullName -recurse | Measure-Object Length -Sum).sum / 1Gb)
+                
+                        "{0:N2} GB | $file_count files `t $_" -f $file_size   
+                    }
                 }
             }
             catch {
@@ -39,8 +50,13 @@ function Get-DirectorySize {
     $total_file_count = [System.IO.Directory]::GetFiles($Path, "*", "AllDirectories").Count
     $total_file_size  = (([System.IO.DirectoryInfo]$Path).EnumerateFiles("*", 'AllDirectories').Length)
     
-    "{0:N2} GB | {1:N0} files `t $Path" -f (($total_file_size | Measure-Object -Sum).Sum / 1Gb), $total_file_count
+    if($Mb) {
+        "{0:N2} MB | {1:N0} files `t $Path" -f (($total_file_size | Measure-Object -Sum).Sum / 1Mb), $total_file_count
+    } else {
+        "{0:N2} GB | {1:N0} files `t $Path" -f (($total_file_size | Measure-Object -Sum).Sum / 1Gb), $total_file_count
+    }
+    
 }
 
 
-Get-DirectorySize -Path $Path -Detailed $Detailed
+Get-DirectorySize -Path $Path -Detailed $Detailed -Mb $Mb 
