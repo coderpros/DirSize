@@ -28,22 +28,18 @@ function Get-DirectorySize {
                 $file_count = [System.IO.Directory]::GetFiles($_.FullName, "*", "AllDirectories").Count
                 $file_size = 0
 
-                if($file_count -gt 0) {
-
-                    if($Mb) {
-                        $file_size = ((Get-ChildItem $_.FullName -recurse | Measure-Object Length -Sum).sum / 1Mb)
-                
-                        "{0:N2} MB | $file_count files `t $_" -f $file_size
-                    } else {
-                        $file_size = ((Get-ChildItem $_.FullName -recurse | Measure-Object Length -Sum).sum / 1Gb)
-                
-                        "{0:N2} GB | $file_count files `t $_" -f $file_size   
-                    }
+                if($Mb) {
+                    file_size = ((Get-ChildItem $_.FullName -recurse | Measure-Object Length -Sum).sum / 1Mb)
+                    
+                    "{0:N2} MB | $file_count files `t $_" -f $file_size
                 }
-            }
-            catch {
+                 else {
+                    $file_size = ((Get-ChildItem $_.FullName -recurse | Measure-Object Length -Sum).sum / 1Gb)
                 
+                    "{0:N2} GB | $file_count files `t $_" -f $file_size   
+                 }
             }
+            catch { }
         }
     } 
 
