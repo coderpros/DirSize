@@ -37,7 +37,7 @@
 > > -Mb returns filesizes in Mb instead of Gb
 ## Change Log
 * 2021/10/17: 
-*   Project creation / initial checkin.
-*   Added optional -Mb parameter that will force the script to return filesizes in Mb instead of Gb.
+  * Project creation / initial checkin.
+  * Added optional -Mb parameter that will force the script to return filesizes in Mb instead of Gb.
 
 ## Notes
