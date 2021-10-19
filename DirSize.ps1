@@ -29,11 +29,10 @@ function Get-DirectorySize {
                 $file_size = 0
 
                 if($Mb) {
-                    file_size = ((Get-ChildItem $_.FullName -recurse | Measure-Object Length -Sum).sum / 1Mb)
+                    $file_size = ((Get-ChildItem $_.FullName -recurse | Measure-Object Length -Sum).sum / 1Mb)
                     
                     "{0:N2} MB | $file_count files `t $_" -f $file_size
-                }
-                 else {
+                } else {
                     $file_size = ((Get-ChildItem $_.FullName -recurse | Measure-Object Length -Sum).sum / 1Gb)
                 
                     "{0:N2} GB | $file_count files `t $_" -f $file_size   
