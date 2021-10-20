@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "CoderPro.DirSize": {
+      "commandName": "Project",
+      "commandLineArgs": "\"D:\\DeleteMe\\\"",
+      "nativeDebugging": false
+    }
+  }
+}
