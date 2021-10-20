@@ -36,7 +36,7 @@
 > > 
 > > -Mb returns filesizes in Mb instead of Gb
 
-#DirSize.Console
+# DirSize.Console
 > .Net 5 C# Console application that recursively returns directory sizes. 
 
 ## Usage
