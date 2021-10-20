@@ -2,7 +2,7 @@
   "profiles": {
     "CoderPro.DirSize": {
       "commandName": "Project",
-      "commandLineArgs": "\"D:\\DeleteMe\\\"",
+      "commandLineArgs": "\"C:\\Users\\BrandonOsborne\" /mb",
       "nativeDebugging": false
     }
   }

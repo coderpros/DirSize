@@ -1,17 +1,19 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-
-namespace CoderPro.DirSize
+﻿namespace CoderPro.DirSize
 {
+    using System;
+    using System.IO;
+    using System.Linq;
+
     internal static class Program
     {
         static void Main(string[] args)
         {
             if (args.Any())
             {
-                string path = args[0];
                 var desiredSizeUnit = SizeUnits.GB;
+                string path = args[0];
+                long directorySize = 0;
+                long fileCount = 0;
 
                 if (args.Contains("/?"))
                 {
@@ -20,7 +22,7 @@ namespace CoderPro.DirSize
                     return;
                 }
 
-                if (args.Contains("/MB"))
+                if (args.Contains("/mb"))
                 {
                     desiredSizeUnit = SizeUnits.MB;
                 }
@@ -31,12 +33,27 @@ namespace CoderPro.DirSize
                 }
                 else
                 {
+                    var d = new DirectoryInfo(path);
+
                     if (path.EndsWith("\""))
                     {
                         path = path.Substring(0, path.Length - 1);
                     }
 
-                    Console.WriteLine($"{ DirSize(new DirectoryInfo(path), args.Contains("/v"), desiredSizeUnit).ToSize(desiredSizeUnit) } {desiredSizeUnit.ToString() } | {new DirectoryInfo(path).EnumerateFiles("*", SearchOption.AllDirectories).LongCount().ToString("N0")} files- {path}");
+                    try
+                    {
+                        directorySize = DirSize(d, args.Contains("/v"), desiredSizeUnit);
+                        fileCount = new DirectoryInfo(path).EnumerateFiles("*", SearchOption.AllDirectories).LongCount();
+
+
+                        Console.WriteLine($"{ directorySize.ToSize(desiredSizeUnit) } {desiredSizeUnit} | {fileCount.ToString("N0")} files - {path}");
+                    }
+                    catch (Exception ex)
+                    {
+                        HandleException(ex, d);
+                        Console.WriteLine($"BEST GUESS: { directorySize.ToSize(desiredSizeUnit) } {desiredSizeUnit} - {path}");
+                    }
+
                 }
             }
             else
@@ -45,33 +62,55 @@ namespace CoderPro.DirSize
             }
         }
 
-        static private long DirSize(DirectoryInfo d, bool verbose, SizeUnits desiredSizeUnit)
+        private static long DirSize(DirectoryInfo d, bool verbose, SizeUnits desiredSizeUnit)
         {
             long size = 0;
             long fileCount = 0;
 
             // Add file sizes.
-            var fis = d.EnumerateFiles();
-            foreach (var fi in fis)
+            try
             {
-                size += fi.Length;
-                fileCount += 1;
-            }
-
-            // Add subdirectory sizes.
-            DirectoryInfo[] dis = d.GetDirectories();
-            foreach (DirectoryInfo di in dis)
-            {
-                long currentDirectorySize = DirSize(di, verbose, desiredSizeUnit);
-                size += currentDirectorySize;
-
-                if (verbose)
+                var fis = d.EnumerateFiles();
+                foreach (var fi in fis)
                 {
-                    Console.WriteLine($"{ currentDirectorySize.ToSize(desiredSizeUnit) } {desiredSizeUnit.ToString()} | {fileCount.ToString("N0")} files - { di.FullName }");
+                    size += fi.Length;
+                    fileCount += 1;
                 }
+
+                // Add subdirectory sizes.
+                DirectoryInfo[] dis = d.GetDirectories();
+                foreach (DirectoryInfo di in dis)
+                {
+                    long currentDirectorySize = DirSize(di, verbose, desiredSizeUnit);
+                    size += currentDirectorySize;
+
+                    if (verbose)
+                    {
+                        Console.WriteLine($"{ currentDirectorySize.ToSize(desiredSizeUnit) } {desiredSizeUnit.ToString()} | {fileCount.ToString("N0")} files - { di.FullName }");
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, d);
+
             }
 
             return size;
+        }
+
+        private static void HandleException(Exception ex, DirectoryInfo d)
+        {
+            switch (ex.HResult)
+            {
+                case -2147024891:
+                    Console.WriteLine($"ERROR: Insufficient Priviledges to access directory ({d.FullName})");
+                    break;
+                default:
+                    Console.WriteLine($"ERROR: UNEXPECTED ERROR: {ex.HResult} - {ex.Message}");
+                    break;
+            }
         }
 
         static private void PrintHelp()
