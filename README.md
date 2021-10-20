@@ -40,7 +40,7 @@
 > .Net 5 C# Console application that recursively returns directory sizes. 
 
 ## Usage
-> DirSize [drive:][path] [/v] [/MB]
+> DirSize [drive:][path] [/v] [/mb]
 > > /v Verbose. Recursive breakdown of each directory.
 > > 
 > > /mb Returns results in megabytes.
