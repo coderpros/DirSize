@@ -42,8 +42,10 @@
 ## Usage
 > DirSize [drive:][path] [/v] [/MB]
 > > /v Verbose. Recursive breakdown of each directory.
-> > /? Returns man doc.
-> > /MB Returns results in megabytes.
+> > 
+> > /mb Returns results in megabytes.
+> > 
+> > /? Returns the man file.
         
 ## Change Log
 * 2021/10/20:
